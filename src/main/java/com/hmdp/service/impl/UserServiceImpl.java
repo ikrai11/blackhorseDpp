@@ -128,8 +128,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String tokenKey=RedisConstants.LOGIN_USER_KEY+token;
         stringRedisTemplate.opsForHash().putAll(tokenKey,map);
         stringRedisTemplate.expire(tokenKey,30,TimeUnit.MINUTES);
-        //8.返回token
         return Result.ok(token);
+
+//        //session实现
+//        //1.校验手机号
+//        if (RegexUtils.isPhoneInvalid(phone)){
+//            //2.如果不符合，返回错误
+//            return Result.fail("手机号格式错误");
+//        }
+//        //2.校验验证码
+//        Object cacheCode = session.getAttribute("code");
+//        if (cacheCode == null||!cacheCode.toString().equals(code)) {
+//            //3.不一致，报错
+//            return Result.fail("验证码错误");
+//        }
+//
+//        //4.一直，根据手机号查询用户
+//        User user = query().eq("phone", phone).one();
+//        //5.判断用户是否存在
+//        if (user == null) {
+//            //6.不存在，创建新用户并保存
+//            user = createUserWithPhone(phone);
+//        }
+//
+//        //7.保存用户信息到session
+//        session.setAttribute("user",user);
+//
+//        return Result.ok();
+
     }
 
     @Override
