@@ -69,12 +69,27 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
         //用逻辑过期解决缓存击穿
         // Shop shop = queryWithLogicalExpire(id);
-        Shop shop = clientClient.
-                queryWithLogicalExpire(CACHE_SHOP_KEY, id, Shop.class, this::getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
-        if(shop==null){
+//        Shop shop = clientClient.
+//                queryWithLogicalExpire(CACHE_SHOP_KEY, id, Shop.class, this::getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
+//        if(shop==null){
+//
+//            return Result.fail("店铺不存在！");
+//        }
 
+        //1.从Redis查询商铺缓存
+        String shopJson = stringRedisTemplate.opsForValue().get(CACHE_SHOP_KEY + id);
+        if(StrUtil.isNotBlank(shopJson)){
+            Shop shop = JSONUtil.toBean(shopJson, Shop.class);
+            return Result.ok(shop);
+        }
+        Shop shop = getById(id);
+        if(shop==null){
             return Result.fail("店铺不存在！");
         }
+        //2.存在，写入Redis
+        stringRedisTemplate.opsForValue().set(CACHE_SHOP_KEY+id,JSONUtil.toJsonStr(shop),CACHE_SHOP_TTL, TimeUnit.MINUTES);
+
+
         return Result.ok(shop);
 
     }

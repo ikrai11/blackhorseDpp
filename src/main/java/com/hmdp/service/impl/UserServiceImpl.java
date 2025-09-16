@@ -54,29 +54,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      */
     @Override
     public Result sendCode(String phone, HttpSession session) {
-//        //1.校验手机号
-//        if(RegexUtils.isPhoneInvalid(phone)) {
-//            //2.不符合，返回错误
-//            return Result.fail("手机号格式错误");
-//        }
-//
-//        //3.符合，生成验证码
-//        String code = RandomUtil.randomNumbers(6);
-//        //4.保存验证码到redis
-//       stringRedisTemplate.opsForValue().set(RedisConstants.LOGIN_CODE_KEY +phone,code,2, TimeUnit.MINUTES);
-//        //5.发送验证码
-//        log.info("短信验证码发送成功：{}",code);
-
         //1.校验手机号
-        if(RegexUtils.isPhoneInvalid(phone)){
-            return Result.fail("手机号格式错误!!!");
+        if(RegexUtils.isPhoneInvalid(phone)) {
+            //2.不符合，返回错误
+            return Result.fail("手机号格式错误");
         }
-        //2.符合，生成验证码
+
+        //3.符合，生成验证码
         String code = RandomUtil.randomNumbers(6);
-        //3.保存验证码到session
-        session.setAttribute(RedisConstants.LOGIN_CODE_KEY+phone,code);
-        //4.发送验证码
+        //4.保存验证码到redis
+       stringRedisTemplate.opsForValue().set(RedisConstants.LOGIN_CODE_KEY +phone,code,2, TimeUnit.MINUTES);
+        //5.发送验证码
         log.info("短信验证码发送成功：{}",code);
+
+//        //1.校验手机号
+//        if(RegexUtils.isPhoneInvalid(phone)){
+//            return Result.fail("手机号格式错误!!!");
+//        }
+//        //2.符合，生成验证码
+//        String code = RandomUtil.randomNumbers(6);
+//        //3.保存验证码到session
+//        session.setAttribute(RedisConstants.LOGIN_CODE_KEY+phone,code);
+//        //4.发送验证码
+//        log.info("短信验证码发送成功：{}",code);
 
 
 
@@ -128,6 +128,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String tokenKey=RedisConstants.LOGIN_USER_KEY+token;
         stringRedisTemplate.opsForHash().putAll(tokenKey,map);
         stringRedisTemplate.expire(tokenKey,30,TimeUnit.MINUTES);
+        //8.返回token
         return Result.ok(token);
 
 //        //session实现
