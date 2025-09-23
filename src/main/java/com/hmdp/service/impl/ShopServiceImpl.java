@@ -73,11 +73,8 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         Shop shop = clientClient.
                 queryWithLogicalExpire(CACHE_SHOP_KEY, id, Shop.class, this::getById, CACHE_SHOP_TTL, TimeUnit.MINUTES);
         if(shop==null){
-
             return Result.fail("店铺不存在！");
         }
-
-
 
         return Result.ok(shop);
 
@@ -138,7 +135,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
      * @return
      * @throws InterruptedException
      */
-/*     public Shop queryWithMutex(Long id) throws InterruptedException {
+     /*public Shop queryWithMutex(Long id) throws InterruptedException {
         //1.尝试从Redis查询商铺缓存
         String shopJson = stringRedisTemplate.opsForValue().get(RedisConstants.CACHE_SHOP_KEY + id);
         //2.判断缓存是否存在
